@@ -1,7 +1,236 @@
 <html>
-<canvas id="gameCanvas" width="800" height="600"></canvas>
+<canvas id="gameCanvas" width="1600" height="900"></canvas>
 
-<script src="game.js">
+<script>
+    var canvas;
+    var canvasContext;
+    var playerX = 50;
+    var playerY = 50;
+
+    var enemyX = 600;
+    var enemyY = 500;
+    const ENEMY_WIDTH = 50;
+    const ENEMY_HEIGHT = 50;
+    var enemySpeed = 2;
+
+    var bulletX = 5000;
+    var bulletY = 5000;
+    var BULLET_WIDTH = 25;
+    var BULLET_HEIGHT = 25;
+
+
+
+    const PLAYER_WIDTH = 50;
+    const PLAYER_HEIGHT = 50;
+    var keyW = false;
+    var keyA = false;
+    var keyS = false;
+    var keyD = false;
+    var keySpace = false;
+    var keyRight = false;
+
+    // Bullet constraints
+    var bullets = [];
+    var SHOT_DELAY = 100;
+    var BULLET_SPEED = 100;
+    var NUMBER_OF_BULLETS = 1;
+
+    var timer = 0;
+
+
+    var PlayerSpeed = 5;
+
+    window.addEventListener("keydown", keyDownHandler, false);
+    window.addEventListener("keyup", keyUpHandler, false);
+
+    function keyDownHandler(e) {
+        if(e.keyCode == 68) {
+            keyD = true;
+        }
+        if(e.keyCode == 83) {
+            keyS = true;
+        }
+        if(e.keyCode == 65) {
+            keyA = true;
+        }
+        if(e.keyCode == 87) {
+            keyW = true;
+        }
+        if(e.keyCode == 32) {
+            keySpace = true;
+        }
+        if(e.keyCode == 39) {
+            keyRight = true;
+        }
+
+    }
+    function keyUpHandler(e) {
+        if(e.keyCode == 68) {
+            keyD = false;
+        }
+        if(e.keyCode == 83) {
+            keyS = false;
+        }
+        if(e.keyCode == 65) {
+            keyA = false;
+        }
+        if(e.keyCode == 87) {
+            keyW = false;
+        }
+        if(e.keyCode == 32) {
+            keySpace = false;
+        }
+        if(e.keyCode == 39) {
+            keyRight = false;
+        }
+    }
+
+    function handleMouseClick(evt) {
+        spawnProjectile();
+    }
+
+    window.onload = function() {
+        canvas = document.getElementById('gameCanvas');
+        canvasContext = canvas.getContext('2d');
+        canvasContext.font="60px Arial";
+
+        var framesPerSecond = 60;
+        setInterval(function() {
+            moveEverything();
+            drawEverything();
+            canvasContext.fillText("RUN BOI RUN!", 50, 75);
+            canvasContext.fillText(timer.toFixed(2), 650, 75);
+
+        }, 1000/framesPerSecond);
+
+        canvas.addEventListener('mousedown', handleMouseClick);
+    }
+
+    function computerMovement() {
+        if(enemyY < playerY) {
+            enemyY = enemyY + enemySpeed;
+        }
+        if(enemyY > playerY) {
+            enemyY = enemyY - enemySpeed;
+        }
+        if(enemyX < playerX) {
+            enemyX = enemyX + enemySpeed;
+        }
+        if(enemyX > playerX) {
+            enemyX = enemyX - enemySpeed;
+        }
+
+    }
+
+    function resetPlayer() {
+        playerX = 0;
+        playerY = 0;
+        timer = 0;
+
+    }
+
+    function resetEnemy() {
+        enemyX = canvas.width;
+        enemyY = canvas.height;
+        enemySpeed = 1;
+
+    }
+
+    function moveEverything() {
+        timer += 1/60;
+
+        enemySpeed += 1/1000;
+
+        if(playerX + PLAYER_WIDTH > enemyX &&
+            playerX - PLAYER_WIDTH < enemyX &&
+            playerY - PLAYER_HEIGHT < enemyY &&
+            playerY + PLAYER_HEIGHT > enemyY) {
+            resetPlayer();
+        }
+
+        if(bulletX + BULLET_WIDTH > enemyX &&
+            bulletX - BULLET_WIDTH < enemyX &&
+            bulletY - BULLET_HEIGHT < enemyY &&
+            bulletY + BULLET_HEIGHT > enemyY) {
+            resetEnemy();
+        }
+
+        if (playerY + PLAYER_HEIGHT > canvas.height){
+            playerY = canvas.height - PLAYER_HEIGHT;
+        }
+        if (playerY < 100) {
+            playerY = 100;
+        }
+        if (playerX + PLAYER_WIDTH > canvas.width) {
+            playerX = canvas.width - PLAYER_WIDTH;
+        }
+
+        if (playerX < 0) {
+            playerX = 0;
+        }
+
+
+        computerMovement();
+        // ballX = ballX + 5;
+
+        if (keySpace) {
+            bulletX = playerX + PLAYER_WIDTH/4;
+            bulletY = playerY + PLAYER_HEIGHT/4;
+        }
+
+        bulletX += 20;
+
+        if(keyD){
+            playerX += PlayerSpeed;
+        }
+        if(keyA) {
+            playerX -= PlayerSpeed;
+        }
+        if(keyS) {
+            playerY += PlayerSpeed;
+        }
+        if(keyW) {
+            playerY -= PlayerSpeed;
+        }
+    }
+
+    function drawEverything() {
+        // next line blanks out the screen with grey
+        colourRect(0,0,canvas.width,canvas.height,'#e6b800');
+        // top bar
+        colourRect(0,0,canvas.width,100,'grey');
+
+        // this is the player
+        colourRect(playerX,playerY,PLAYER_WIDTH,PLAYER_HEIGHT,'#e6e6e6');
+        // this is the enemy
+        colourRect(enemyX,enemyY,ENEMY_WIDTH,ENEMY_HEIGHT,'red');
+        // bullet box
+        colourRect(bulletX,bulletY,BULLET_WIDTH,BULLET_HEIGHT,'grey');
+
+
+
+    }
+
+    function colourRect(leftX,topY, width,height, drawColor) {
+        canvasContext.fillStyle = drawColor;
+        canvasContext.fillRect(leftX,topY, width,height);
+    }
+
+    // Bullet = function () {
+    //     this.
+    //
+    // }
+
+    // function spawnProjectile() {
+    //     // spawns bullet and adds it to array
+    //     var newBullet = new bullet();
+    //     newBullet.init();
+    //     bullets.push(newBullet);
+    //
+    //     // projectile
+    //     colourRect(10, 10, 10, 10, 'red');
+    //
+    // }
 </script>
 
 </html>

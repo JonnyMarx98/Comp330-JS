@@ -1,7 +1,3 @@
-<html>
-<canvas id="gameCanvas" width="800" height="600"></canvas>
-
-<script>
     var canvas;
     var canvasContext;
     var playerX = 50;
@@ -105,7 +101,3 @@
         colourRect(10, 10, 10, 10, 'red');
 
     }
-
-</script>
-
-</html>

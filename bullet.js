@@ -8,16 +8,29 @@ class bullet {
     }
     Update() {
         this.bulletX += BULLET_SPEED;
+
     }
     Draw() {
         colourRect(this.bulletX,this.bulletY,BULLET_WIDTH,BULLET_HEIGHT,'grey');
     }
-    CheckCollision() {
-        if(this.bulletX + BULLET_WIDTH > enemyX &&
-            this.bulletX - BULLET_WIDTH < enemyX &&
-            this.bulletY - BULLET_HEIGHT < enemyY &&
-            this.bulletY + BULLET_HEIGHT > enemyY) {
-            resetEnemy();
+    CheckCollision(enemies) {
+        console.debug(enemies.length);
+        var o;
+        for (o=0; o<enemies.length; o++){
+            // enemies[i].enemyX;
+            if(this.bulletX + BULLET_WIDTH > enemies[o].enemyX &&
+                this.bulletX - BULLET_WIDTH < enemies[o].enemyX &&
+                this.bulletY - BULLET_HEIGHT < enemies[o].enemyY &&
+                this.bulletY + BULLET_HEIGHT > enemies[o].enemyY) {
+                enemies[o].Reset();
+                score++;
+                score2++;
+                if (score2 >= 3){
+                    score2 = 0;
+
+                }
+            }
+
         }
     }
 }

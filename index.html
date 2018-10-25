@@ -1,31 +1,109 @@
+<!DOCTYPE HTML>
 <html>
-<canvas id="gameCanvas" width="1600" height="900"></canvas>
-<script src="bullet.js"></script>
+<head>
+    <meta charset="UTF-8">
+    <title>JonnyIsGud</title>
+    <script src="bullet.js"></script>
+    <script src="input.js"></script>
+</head>
+<canvas id="gameCanvas" width="1200" height="900"></canvas>
+
+</html>
+
 <script>
 
+    class enemy {
+        Spawn(x,y) {
+            this.enemyX = 0;
+            this.enemyY = 0;
+
+            this.enemyX = x;
+            this.enemyY = y;
+            this.enemySpeed = Math.floor((Math.random() * 5) + 1);
+        }
+        Update() {
+            if(this.enemyY < playerY) {
+                this.enemyY = this.enemyY + this.enemySpeed;
+            }
+            if(this.enemyY > playerY) {
+                this.enemyY = this.enemyY - this.enemySpeed;
+            }
+            if(this.enemyX < playerX) {
+                this.enemyX = this.enemyX + this.enemySpeed;
+            }
+            if(this.enemyX > playerX) {
+                this.enemyX = this.enemyX - this.enemySpeed;
+            }
+            enemyDelayTimer -= 1;
+        }
+        Draw() {
+            colourRect(this.enemyX,this.enemyY,ENEMY_WIDTH,ENEMY_HEIGHT,'red');
+        }
+        CheckCollision() {
+            if(playerX + PLAYER_WIDTH > this.enemyX &&
+                playerX - PLAYER_WIDTH < this.enemyX &&
+                playerY - PLAYER_HEIGHT < this.enemyY &&
+                playerY + PLAYER_HEIGHT > this.enemyY) {
+                resetPlayer();
+                this.Reset();
+            }
+        }
+        Clamp() {
+            if (this.enemyY + ENEMY_HEIGHT > canvas.height){
+                this.enemyY = canvas.height - ENEMY_HEIGHT;
+            }
+            if (this.enemyY < 100) {
+                this.enemyY = 100;
+            }
+            if (this.enemyX + ENEMY_WIDTH > canvas.width) {
+                this.enemyX = canvas.width - ENEMY_WIDTH;
+            }
+            if (this.enemyX < 0) {
+                this.enemyX = 0;
+            }
+        }
+        Reset(){
+            this.enemyX = canvas.width;
+            this.enemyY = Math.floor((Math.random() * canvas.height) + 1);
+            //enemySpeed = 1;
+        }
+    }
 
     var canvas;
     var canvasContext;
     var gravity = 5;
 
+    // Enemy vars
+    const ENEMY_WIDTH = 50;
+    const ENEMY_HEIGHT = 50;
+    const ENEMY_DELAY = 60;
+    var enemyX = 600;
+    var enemyY = 500;
+    var enemySpeed = 2;
+    var enemies = [];
+    var newEnemy = new enemy();
+    var enemyDelayTimer = ENEMY_DELAY;
+
+    // Player vars
+    const PLAYER_WIDTH = 50;
+    const PLAYER_HEIGHT = 50;
     var playerX = 50;
     var playerY = 50;
 
-    var enemyX = 600;
-    var enemyY = 500;
-    const ENEMY_WIDTH = 50;
-    const ENEMY_HEIGHT = 50;
-    var enemySpeed = 2;
-
+    // Bullet vars
+    const BULLET_WIDTH = 25;
+    const BULLET_HEIGHT = 25;
+    const BULLET_DELAY = 10;
+    const BULLET_SPEED = 20;
+    var i;
     var bulletX = 5000;
     var bulletY = 5000;
+    var bulletDelayTimer = BULLET_DELAY;
+    var bullets = [];
+    var NUMBER_OF_BULLETS = 1;
+    var newBullet = new bullet;
 
-    var i;
-
-
-
-    const PLAYER_WIDTH = 50;
-    const PLAYER_HEIGHT = 50;
+    // Keys
     var keyW = false;
     var keyA = false;
     var keyS = false;
@@ -33,17 +111,9 @@
     var keySpace = false;
     var keyRight = false;
 
-    // Bullet constraints
-    const BULLET_WIDTH = 25;
-    const BULLET_HEIGHT = 25;
-    var bullets = [];
-    const BULLET_DELAY = 15;
-    var bulletDelayTimer = BULLET_DELAY;
-    const BULLET_SPEED = 20;
-    var NUMBER_OF_BULLETS = 1;
-    var newbullet = new bullet;
-
     var timer = 0;
+    var score = 0;
+    var score2 = 0;
 
 
     var PlayerSpeed = 5;
@@ -94,41 +164,34 @@
     }
 
     function handleMouseClick(evt) {
-        //spawnProjectile();
     }
 
     window.onload = function() {
         canvas = document.getElementById('gameCanvas');
         canvasContext = canvas.getContext('2d');
-        canvasContext.font="60px Arial";
 
         var framesPerSecond = 60;
         setInterval(function() {
             moveEverything();
             drawEverything();
-            canvasContext.fillText("RUN BOI RUN!", 50, 75);
-            canvasContext.fillText(timer.toFixed(2), 650, 75);
-            bulletDelayTimer -= 1;
-
-
         }, 1000/framesPerSecond);
 
         canvas.addEventListener('mousedown', handleMouseClick);
     }
 
     function computerMovement() {
-        if(enemyY < playerY) {
-            enemyY = enemyY + enemySpeed;
-        }
-        if(enemyY > playerY) {
-            enemyY = enemyY - enemySpeed;
-        }
-        if(enemyX < playerX) {
-            enemyX = enemyX + enemySpeed;
-        }
-        if(enemyX > playerX) {
-            enemyX = enemyX - enemySpeed;
-        }
+        // if(enemyY < playerY) {
+        //     enemyY = enemyY + enemySpeed;
+        // }
+        // if(enemyY > playerY) {
+        //     enemyY = enemyY - enemySpeed;
+        // }
+        // if(enemyX < playerX) {
+        //     enemyX = enemyX + enemySpeed;
+        // }
+        // if(enemyX > playerX) {
+        //     enemyX = enemyX - enemySpeed;
+        // }
 
     }
 
@@ -145,54 +208,54 @@
     }
 
     function resetEnemy() {
-        enemyX = canvas.width;
-        enemyY = canvas.height;
-        enemySpeed = 1;
+        // enemyX = canvas.width;
+        // enemyY = canvas.height;
+        // enemySpeed = 1;
 
     }
 
     function moveEverything() {
-        Gravity();
+        //Gravity();
+
         timer += 1/60;
-
-        enemySpeed += 1/1000;
-
-        if(playerX + PLAYER_WIDTH > enemyX &&
-            playerX - PLAYER_WIDTH < enemyX &&
-            playerY - PLAYER_HEIGHT < enemyY &&
-            playerY + PLAYER_HEIGHT > enemyY) {
-            resetPlayer();
-            resetEnemy();
-        }
+        bulletDelayTimer--;
+        enemyDelayTimer--;
 
         for (i = 0; i<bullets.length; i++) {
-            bullets[i].CheckCollision();
+            bullets[i].CheckCollision(enemies);
         }
 
-        Clamp();
+        ClampEverything();
 
-
-        computerMovement();
-        // ballX = ballX + 5;
+        for (i=0; i<enemies.length; i++){
+            enemies[i].CheckCollision();
+            enemies[i].Update();
+        }
 
         // KEY SPACE HERE
         if (keySpace) {
-            //bulletX = playerX + PLAYER_WIDTH/4;
-            //bulletY = playerY + PLAYER_HEIGHT/4;
             if (bulletDelayTimer < 0) {
                 bulletDelayTimer = BULLET_DELAY;
-            newbullet = new bullet();
-            newbullet.Spawn(playerX + PLAYER_WIDTH/4, playerY + PLAYER_HEIGHT/4);
-            bullets.push(newbullet);
+                newBullet = new bullet();
+                newBullet.Spawn(playerX + PLAYER_WIDTH/4, playerY + PLAYER_HEIGHT/4);
+                bullets.push(newBullet);
             }
         }
-        // if (newbullet)
-        //     newbullet.Update();
+
+        if (keyRight) {
+            if (enemyDelayTimer < 0) {
+                enemyDelayTimer = ENEMY_DELAY;
+                newEnemy = new enemy();
+                newEnemy.Spawn(canvas.width, Math.floor((Math.random() * canvas.height) + 1));
+                enemies.push(newEnemy);
+            }
+        }
+
 
         for (i = 0; i<bullets.length; i++) {
             bullets[i].Update();
         }
-        bulletX += 20;
+        //bulletX += 20;
 
         if(keyD){
             playerX += PlayerSpeed;
@@ -204,11 +267,13 @@
             playerY += PlayerSpeed;
         }
         if(keyW) {
-            playerY -= PlayerSpeed*5 ;
+            playerY -= PlayerSpeed;
         }
     }
 
     function drawEverything() {
+
+
         // next line blanks out the screen with grey
         colourRect(0,0,canvas.width,canvas.height,'#e6b800');
         // top bar
@@ -217,19 +282,29 @@
         // this is the player
         colourRect(playerX,playerY,PLAYER_WIDTH,PLAYER_HEIGHT,'#e6e6e6');
         // this is the enemy
-        colourRect(enemyX,enemyY,ENEMY_WIDTH,ENEMY_HEIGHT,'red');
-        // bullet box
-        colourRect(bulletX,bulletY,BULLET_WIDTH,BULLET_HEIGHT,'grey');
+        //colourRect(enemyX,enemyY,ENEMY_WIDTH,ENEMY_HEIGHT,'red');
+        for (i = 0; i<enemies.length; i++) {
+            enemies[i].Draw();
+        }
+        // bullet
         for (i = 0; i<bullets.length; i++) {
             bullets[i].Draw();
         }
-
-
-
+        displayText("Time: " + timer.toFixed(2), 150, 75, "red");
+        displayText("Score: " + score.toFixed(0), 1000, 75, "red");
 
     }
 
-    function Clamp(){
+    function displayText(text, x, y, colour) {
+        canvasContext.font="60px Arial";
+        canvasContext.font = "30px Comic Sans MS";
+        canvasContext.fillStyle = colour;
+        //canvasContext.textAlign = "center";
+        canvasContext.fillText(text, x, y);
+
+    }
+
+    function ClampEverything(){
         if (playerY + PLAYER_HEIGHT > canvas.height){
             playerY = canvas.height - PLAYER_HEIGHT;
         }
@@ -243,18 +318,24 @@
             playerX = 0;
         }
 
-        if (enemyY + ENEMY_HEIGHT > canvas.height){
-            enemyY = canvas.height - ENEMY_HEIGHT;
+        for (i = 0; i<enemies.length; i++) {
+            enemies[i].Clamp();
         }
-        if (enemyY < 100) {
-            enemyY = 100;
-        }
-        if (enemyX + ENEMY_WIDTH > canvas.width) {
-            enemyX = canvas.width - ENEMY_WIDTH;
-        }
-        if (enemyX < 0) {
-            enemyX = 0;
-        }
+
+
+
+        // if (enemyY + ENEMY_HEIGHT > canvas.height){
+        //     enemyY = canvas.height - ENEMY_HEIGHT;
+        // }
+        // if (enemyY < 100) {
+        //     enemyY = 100;
+        // }
+        // if (enemyX + ENEMY_WIDTH > canvas.width) {
+        //     enemyX = canvas.width - ENEMY_WIDTH;
+        // }
+        // if (enemyX < 0) {
+        //     enemyX = 0;
+        // }
     }
 
     function colourRect(leftX,topY, width,height, drawColor) {
@@ -281,4 +362,3 @@
     // }
 </script>
 
-</html>

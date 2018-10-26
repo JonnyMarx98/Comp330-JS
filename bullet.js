@@ -23,7 +23,10 @@ class bullet {
                 this.bulletY - BULLET_HEIGHT < enemies[o].enemyY &&
                 this.bulletY + BULLET_HEIGHT > enemies[o].enemyY) {
                 enemies[o].Reset();
-                this.bulletX = undefined;
+                if (!upgradeActive){
+                    this.bulletX = undefined;
+                }
+
                 score++;
                 enemyCounter++;
             }

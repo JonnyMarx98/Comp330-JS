@@ -15,6 +15,9 @@
     var canvas;
     var canvasContext;
     var gravity = 5;
+    var upgradeTimer = 1;
+    var upgradeActive = false;
+    var upgradeKillAmount = 2;
 
     const TOPBAR_HEIGHT = 100;
 
@@ -36,12 +39,14 @@
     const PLAYER_HEIGHT = 50;
     var playerX = 50;
     var playerY = 50;
+    var playerLives = 3;
+    var PlayerSpeed = 5;
 
     // Bullet vars
     const BULLET_WIDTH = 25;
     const BULLET_HEIGHT = 25;
-    const BULLET_DELAY = 10;
-    const BULLET_SPEED = 20;
+    var BULLET_DELAY = 10;
+    var BULLET_SPEED = 20;
     var i;
     var bulletX = 5000;
     var bulletY = 5000;
@@ -64,7 +69,7 @@
     var enemyCounter = 0;
 
 
-    var PlayerSpeed = 5;
+
 
     window.addEventListener("keydown", keyDownHandler, false);
     window.addEventListener("keyup", keyUpHandler, false);
@@ -114,6 +119,10 @@
     function handleMouseClick(evt) {
     }
 
+    function getRandomNum(min, max) {
+        return Math.floor(Math.random() * (max - min + 1) ) + min;
+    }
+
     window.onload = function() {
         canvas = document.getElementById('gameCanvas');
         canvasContext = canvas.getContext('2d');
@@ -122,6 +131,30 @@
         setInterval(function() {
             moveEverything();
             drawEverything();
+
+            if (playerLives == 0){
+                window.alert("GAME OVER!     Score: " + score);
+                location.reload();
+            }
+
+            if (score == upgradeKillAmount && !upgradeActive){
+                window.alert("UPGRADE UNLOCKED! Press ENTER");
+                upgradeActive = true;
+                BULLET_DELAY = 1;
+                BULLET_SPEED = 50;
+                PlayerSpeed = 10;
+                upgradeKillAmount+=10;
+            }
+            if (upgradeActive){
+                upgradeTimer-= 1/60;
+            }
+            if (upgradeTimer < 0){
+                BULLET_DELAY = 10;
+                BULLET_SPEED = 20;
+                PlayerSpeed = 5;
+                upgradeActive = false;
+            }
+
         }, 1000/framesPerSecond);
 
         canvas.addEventListener('mousedown', handleMouseClick);
@@ -154,7 +187,7 @@
             newEnemy.Spawn(canvas.width, Math.floor((Math.random() * canvas.height) + 1));
             enemies.push(newEnemy);
         }
-        if (enemyCounter > 5){
+        if (enemyCounter > 15){
             enemyCounter = 0;
             maxEnemies++;
         }
@@ -202,7 +235,7 @@
 
 
         // next line blanks out the screen with grey
-        colourRect(0,0,canvas.width,canvas.height,'#e6b800');
+        colourRect(0,0,canvas.width,canvas.height,'#1d1d20');
         // top bar
         colourRect(0,0,canvas.width,TOPBAR_HEIGHT,'grey');
 
@@ -216,9 +249,10 @@
         for (i = 0; i<bullets.length; i++) {
             bullets[i].Draw();
         }
-        displayText("Time: " + timer.toFixed(2), 150, 75, "red");
+        displayText("Time: " + timer.toFixed(2), 50, 75, "red");
         displayText("Score: " + score.toFixed(0), 1000, 75, "red");
-        displayText("MaxEnemies: " + maxEnemies.toFixed(0), 500, 75, "red");
+        //displayText("MaxEnemies: " + maxEnemies.toFixed(0), 300, 75, "red");
+        displayText("Lives: " + playerLives.toFixed(0), 800, 75, "#52e633");
 
     }
 

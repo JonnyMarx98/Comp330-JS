@@ -15,9 +15,9 @@
     var canvas;
     var canvasContext;
     var gravity = 5;
-    var upgradeTimer = 1;
+    var upgradeTimer = 6;
     var upgradeActive = false;
-    var upgradeKillAmount = 2;
+    var upgradeKillAmount = 50;
 
     const TOPBAR_HEIGHT = 100;
 
@@ -143,7 +143,7 @@
                 BULLET_DELAY = 1;
                 BULLET_SPEED = 50;
                 PlayerSpeed = 10;
-                upgradeKillAmount+=10;
+                upgradeKillAmount+=100;
             }
             if (upgradeActive){
                 upgradeTimer-= 1/60;
@@ -153,6 +153,7 @@
                 BULLET_SPEED = 20;
                 PlayerSpeed = 5;
                 upgradeActive = false;
+                upgradeTimer = 6;
             }
 
         }, 1000/framesPerSecond);

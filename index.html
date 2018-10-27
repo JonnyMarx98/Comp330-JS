@@ -6,7 +6,7 @@
     <script src="bullet.js"></script>
     <script src="enemy.js"></script>
 </head>
-<canvas id="gameCanvas" width="1200" height="900"></canvas>
+<canvas id="gameCanvas" width= "900" height="600"></canvas>
 
 </html>
 
@@ -18,6 +18,8 @@
     var upgradeTimer = 6;
     var upgradeActive = false;
     var upgradeKillAmount = 50;
+    var mouseY;
+    var mouseX;
 
     const TOPBAR_HEIGHT = 100;
 
@@ -55,6 +57,7 @@
     var NUMBER_OF_BULLETS = 1;
     var newBullet = new bullet;
     var destroyBullet = false;
+    //var bulletDirection = 0;
 
     // Keys
     var keyW = false;
@@ -62,6 +65,9 @@
     var keyS = false;
     var keyD = false;
     var keySpace = false;
+    var keyUp = false;
+    var keyDown = false;
+    var keyLeft = false;
     var keyRight = false;
 
     var timer = 0;
@@ -69,54 +75,50 @@
     var enemyCounter = 0;
 
 
-
-
     window.addEventListener("keydown", keyDownHandler, false);
     window.addEventListener("keyup", keyUpHandler, false);
 
+    function calculateMousePos(evt) {
+        var rect = canvas.getBoundingClientRect();
+        var root = document.documentElement;
+        var mouseX = evt.clientX - rect.left - root.scrollLeft;
+        var mouseY = evt.clientY - rect.top - root.scrollTop;
+        return {
+            x:mouseX,
+            y:mouseY
+        };
+    }
+
     function keyDownHandler(e) {
-        if(e.keyCode == 68) {
-            keyD = true;
-        }
-        if(e.keyCode == 83) {
-            keyS = true;
-        }
-        if(e.keyCode == 65) {
-            keyA = true;
-        }
-        if(e.keyCode == 87) {
-            keyW = true;
-        }
-        if(e.keyCode == 32) {
-            keySpace = true;
-        }
-        if(e.keyCode == 39) {
-            keyRight = true;
-        }
+        if(e.keyCode == 68) keyD = true;
+        if(e.keyCode == 83) keyS = true;
+        if(e.keyCode == 65) keyA = true;
+        if(e.keyCode == 87) keyW = true;
+        if(e.keyCode == 32) keySpace = true;
+        if(e.keyCode == 37) keyLeft = true;
+        if(e.keyCode == 38) keyUp = true;
+        if(e.keyCode == 39) keyRight = true;
+        if(e.keyCode == 40) keyDown = true;
 
     }
     function keyUpHandler(e) {
-        if(e.keyCode == 68) {
-            keyD = false;
-        }
-        if(e.keyCode == 83) {
-            keyS = false;
-        }
-        if(e.keyCode == 65) {
-            keyA = false;
-        }
-        if(e.keyCode == 87) {
-            keyW = false;
-        }
-        if(e.keyCode == 32) {
-            keySpace = false;
-        }
-        if(e.keyCode == 39) {
-            keyRight = false;
-        }
+        if(e.keyCode == 68) keyD = false;
+        if(e.keyCode == 83) keyS = false;
+        if(e.keyCode == 65) keyA = false;
+        if(e.keyCode == 87) keyW = false;
+        if(e.keyCode == 32) keySpace = false;
+        if(e.keyCode == 37) keyLeft = false;
+        if(e.keyCode == 38) keyUp = false;
+        if(e.keyCode == 39) keyRight = false;
+        if(e.keyCode == 40) keyDown = false;
     }
 
     function handleMouseClick(evt) {
+        spawnBullet(0);
+    }
+
+    function handleMouseDown(evt){
+        spawnBullet(0);
     }
 
     function getRandomNum(min, max) {
@@ -127,7 +129,13 @@
         canvas = document.getElementById('gameCanvas');
         canvasContext = canvas.getContext('2d');
 
-        var framesPerSecond = 60;
+        canvasContext.width = innerWidth;
+        canvasContext.height = innerHeight;
+
+        console.debug(canvasContext.width);
+        console.debug(canvasContext.height);
+
+        var framesPerSecond = 30;
         setInterval(function() {
             moveEverything();
             drawEverything();
@@ -137,28 +145,39 @@
                 location.reload();
             }
 
-            if (score == upgradeKillAmount && !upgradeActive){
-                window.alert("UPGRADE UNLOCKED! Press ENTER");
-                upgradeActive = true;
-                BULLET_DELAY = 1;
-                BULLET_SPEED = 50;
-                PlayerSpeed = 10;
-                upgradeKillAmount+=100;
-            }
-            if (upgradeActive){
-                upgradeTimer-= 1/60;
-            }
-            if (upgradeTimer < 0){
-                BULLET_DELAY = 10;
-                BULLET_SPEED = 20;
-                PlayerSpeed = 5;
-                upgradeActive = false;
-                upgradeTimer = 6;
-            }
+            upgradeStuff();
 
         }, 1000/framesPerSecond);
 
+        canvas.addEventListener('mousemove',
+            function(evt) {
+                var mousePos = calculateMousePos(evt);
+                mouseX = mousePos.x;
+                mouseY = mousePos.y;
+            });
+
         canvas.addEventListener('mousedown', handleMouseClick);
+    }
+
+    function upgradeStuff(){
+        if (score == upgradeKillAmount && !upgradeActive){
+            window.alert("UPGRADE UNLOCKED! Press ENTER");
+            upgradeActive = true;
+            BULLET_DELAY = 1;
+            BULLET_SPEED = 50;
+            PlayerSpeed = 10;
+            upgradeKillAmount+=100;
+        }
+        if (upgradeActive){
+            upgradeTimer-= 1/60;
+        }
+        if (upgradeTimer < 0){
+            BULLET_DELAY = 10;
+            BULLET_SPEED = 20;
+            PlayerSpeed = 5;
+            upgradeActive = false;
+            upgradeTimer = 6;
+        }
     }
 
 
@@ -205,14 +224,15 @@
             enemies[i].Update();
         }
 
-        if (keySpace) {
-            if (bulletDelayTimer < 0) {
-                bulletDelayTimer = BULLET_DELAY;
-                newBullet = new bullet();
-                newBullet.Spawn(playerX + PLAYER_WIDTH/4, playerY + PLAYER_HEIGHT/4);
-                bullets.push(newBullet);
-            }
-        }
+        if (keyLeft) spawnBullet(0);
+        if (keyUp) spawnBullet(1);
+        if (keyRight) spawnBullet(2);
+        if (keyDown) spawnBullet(3);
+
+        // if (keySpace){
+        //     spawnBullet(0);
+        // }
+
 
         for (i = 0; i<bullets.length; i++) {
             bullets[i].Update();
@@ -229,6 +249,18 @@
         }
         if(keyW) {
             playerY -= PlayerSpeed;
+        }
+    }
+
+    function spawnBullet(direction){
+        if (bulletDelayTimer < 0) {
+            bulletDelayTimer = BULLET_DELAY;
+            newBullet = new bullet();
+            newBullet.Spawn(playerX + PLAYER_WIDTH/4, playerY + PLAYER_HEIGHT/4);
+            bullets.push(newBullet);
+            newBullet.bulletDirection = direction;
+            newBullet.directionX = mouseX;
+            newBullet.directionY = mouseY;
         }
     }
 
@@ -251,9 +283,9 @@
             bullets[i].Draw();
         }
         displayText("Time: " + timer.toFixed(2), 50, 75, "red");
-        displayText("Score: " + score.toFixed(0), 1000, 75, "red");
+        displayText("Score: " + score.toFixed(0), canvas.width - 200, 75, "red");
         //displayText("MaxEnemies: " + maxEnemies.toFixed(0), 300, 75, "red");
-        displayText("Lives: " + playerLives.toFixed(0), 800, 75, "#52e633");
+        displayText("Lives: " + playerLives.toFixed(0), canvas.width - 600, 75, "#52e633");
 
     }
 

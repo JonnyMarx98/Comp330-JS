@@ -5,7 +5,7 @@ class enemy {
 
         this.enemyX = x;
         this.enemyY = y;
-        this.enemySpeed = getRandomNum(1,3); //Math.floor((Math.random() * 4) + 2);
+        this.enemySpeed = getRandomNum(1,maxEnemySpeed); //Math.floor((Math.random() * 4) + 2);
         this.direction = getRandomNum(0,1);
         this.count = 60;
     }
@@ -46,10 +46,10 @@ class enemy {
         colourRect(this.enemyX,this.enemyY,ENEMY_WIDTH,ENEMY_HEIGHT,'red');
     }
     CheckCollision() {
-        if(playerX + PLAYER_WIDTH > this.enemyX &&
-            playerX - PLAYER_WIDTH < this.enemyX &&
-            playerY - PLAYER_HEIGHT < this.enemyY &&
-            playerY + PLAYER_HEIGHT > this.enemyY) {
+        if(players[0].playerX + PLAYER_WIDTH > this.enemyX &&
+            players[0].playerX - PLAYER_WIDTH < this.enemyX &&
+            players[0].playerY - PLAYER_HEIGHT < this.enemyY &&
+            players[0].playerY + PLAYER_HEIGHT > this.enemyY) {
             resetPlayer();
             playerLives--;
             this.Reset();

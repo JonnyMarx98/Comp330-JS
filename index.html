@@ -5,6 +5,7 @@
     <title>JonnyIsGud</title>
     <script src="bullet.js"></script>
     <script src="enemy.js"></script>
+    <script src="player.js"></script>
 </head>
 <canvas id="gameCanvas" width= "900" height="600"></canvas>
 
@@ -29,7 +30,7 @@
     const ENEMY_DELAY = 200;
     var enemyX = 600;
     var enemyY = 500;
-    var enemySpeed = 2;
+    var maxEnemySpeed = 3;
     var enemies = [];
     var newEnemy = new enemy();
     var enemyDelayTimer = ENEMY_DELAY;
@@ -42,7 +43,9 @@
     var playerX = 50;
     var playerY = 50;
     var playerLives = 3;
-    var PlayerSpeed = 5;
+    var PlayerSpeed = 5
+    var newPlayer = new player();
+    var players = [];
 
     // Bullet vars
     const BULLET_WIDTH = 25;
@@ -135,14 +138,17 @@
         console.debug(canvasContext.width);
         console.debug(canvasContext.height);
 
-        var framesPerSecond = 30;
+        spawnPlayer();
+
+        var framesPerSecond = 60;
         setInterval(function() {
             moveEverything();
             drawEverything();
 
             if (playerLives == 0){
-                window.alert("GAME OVER!     Score: " + score);
                 location.reload();
+                window.alert("GAME OVER!     Score: " + score);
+                //location.reload();
             }
 
             upgradeStuff();
@@ -160,24 +166,24 @@
     }
 
     function upgradeStuff(){
-        if (score == upgradeKillAmount && !upgradeActive){
-            window.alert("UPGRADE UNLOCKED! Press ENTER");
-            upgradeActive = true;
-            BULLET_DELAY = 1;
-            BULLET_SPEED = 50;
-            PlayerSpeed = 10;
-            upgradeKillAmount+=100;
-        }
-        if (upgradeActive){
-            upgradeTimer-= 1/60;
-        }
-        if (upgradeTimer < 0){
-            BULLET_DELAY = 10;
-            BULLET_SPEED = 20;
-            PlayerSpeed = 5;
-            upgradeActive = false;
-            upgradeTimer = 6;
-        }
+        // if (score == upgradeKillAmount && !upgradeActive){
+        //     window.alert("UPGRADE UNLOCKED! Press ENTER");
+        //     upgradeActive = true;
+        //     BULLET_DELAY = 1;
+        //     BULLET_SPEED = 50;
+        //     PlayerSpeed = 10;
+        //     upgradeKillAmount+=100;
+        // }
+        // if (upgradeActive){
+        //     upgradeTimer-= 1/60;
+        // }
+        // if (upgradeTimer < 0){
+        //     BULLET_DELAY = 10;
+        //     BULLET_SPEED = 20;
+        //     PlayerSpeed = 5;
+        //     upgradeActive = false;
+        //     upgradeTimer = 6;
+        // }
     }
 
 
@@ -186,10 +192,19 @@
         enemyY += gravity;
     }
 
+
+
+    function spawnPlayer(){
+        newPlayer = new player();
+        newPlayer.Spawn(playerX, playerY);
+        players.push(newPlayer);
+    }
+
     function resetPlayer() {
-        playerX = 0;
-        playerY = 0;
-        timer = 0;
+        // playerX = 0;
+        // playerY = 0;
+        // timer = 0;
+        players[0].Reset();
 
     }
 
@@ -207,10 +222,10 @@
             newEnemy.Spawn(canvas.width, Math.floor((Math.random() * canvas.height) + 1));
             enemies.push(newEnemy);
         }
-        if (enemyCounter > 15){
-            enemyCounter = 0;
-            maxEnemies++;
-        }
+        // if (enemyCounter > 25 && maxEnemySpeed < 10){
+        //     enemyCounter = 0;
+        //     maxEnemySpeed++;
+        // }
 
 
         for (i = 0; i<bullets.length; i++) {
@@ -224,31 +239,22 @@
             enemies[i].Update();
         }
 
+        for (i=0; i<players.length; i++){
+            players[i].Update();
+        }
+
         if (keyLeft) spawnBullet(0);
         if (keyUp) spawnBullet(1);
         if (keyRight) spawnBullet(2);
         if (keyDown) spawnBullet(3);
 
-        // if (keySpace){
-        //     spawnBullet(0);
-        // }
+        if (keySpace){
+            spawnPlayer();
+        }
 
 
         for (i = 0; i<bullets.length; i++) {
             bullets[i].Update();
-        }
-
-        if(keyD){
-            playerX += PlayerSpeed;
-        }
-        if(keyA) {
-            playerX -= PlayerSpeed;
-        }
-        if(keyS) {
-            playerY += PlayerSpeed;
-        }
-        if(keyW) {
-            playerY -= PlayerSpeed;
         }
     }
 
@@ -256,7 +262,7 @@
         if (bulletDelayTimer < 0) {
             bulletDelayTimer = BULLET_DELAY;
             newBullet = new bullet();
-            newBullet.Spawn(playerX + PLAYER_WIDTH/4, playerY + PLAYER_HEIGHT/4);
+            newBullet.Spawn(players[0].playerX + PLAYER_WIDTH/4, players[0].playerY + PLAYER_HEIGHT/4);
             bullets.push(newBullet);
             newBullet.bulletDirection = direction;
             newBullet.directionX = mouseX;
@@ -273,7 +279,9 @@
         colourRect(0,0,canvas.width,TOPBAR_HEIGHT,'grey');
 
         // this is the player
-        colourRect(playerX,playerY,PLAYER_WIDTH,PLAYER_HEIGHT,'#e6e6e6');
+        for (i = 0; i < players.length; i++) {
+            players[i].Draw();
+        }
         // draw the enemies
         for (i = 0; i < enemies.length; i++) {
             enemies[i].Draw();
@@ -303,17 +311,8 @@
     }
 
     function ClampEverything(){
-        if (playerY + PLAYER_HEIGHT > canvas.height){
-            playerY = canvas.height - PLAYER_HEIGHT;
-        }
-        if (playerY < TOPBAR_HEIGHT) {
-            playerY = TOPBAR_HEIGHT;
-        }
-        if (playerX + PLAYER_WIDTH > canvas.width) {
-            playerX = canvas.width - PLAYER_WIDTH;
-        }
-        if (playerX < 0) {
-            playerX = 0;
+        for (i = 0; i<players.length; i++) {
+            players[i].Clamp();
         }
 
         for (i = 0; i<enemies.length; i++) {

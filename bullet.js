@@ -76,7 +76,7 @@ class bullet {
                 }
 
                 score++;
-                enemyCounter++;
+                enemyCounter++; // Copyright Jayde Weber
             }
 
         }

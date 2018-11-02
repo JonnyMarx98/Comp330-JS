@@ -42,7 +42,7 @@ class player {
     }
     Clamp() {
 
-        if (this.playerY + PLAYER_HEIGHT/2> canvas.height){
+        if (this.playerY + PLAYER_HEIGHT/2> canvas.height){ //.
             this.playerY = canvas.height - PLAYER_HEIGHT/2;
         }
         if (this.playerY - PLAYER_HEIGHT/2 < TOPBAR_HEIGHT) {

@@ -5,8 +5,9 @@ class player {
 
         this.playerX = x;
         this.playerY = y;
+        this.playerAngle;
     }
-    Update() {
+    Update(mouse_x,mouse_y) {
 
         if(keyD){
             this.playerX += PlayerSpeed;
@@ -21,10 +22,23 @@ class player {
             this.playerY -= PlayerSpeed;
         }
 
+        let dx = mouse_x - this.playerX;
+        let dy = mouse_y - this.playerY;
+        this.playerAngle = Math.atan2(dy,dx);
+
 
     }
     Draw() {
-        colourRect(this.playerX,this.playerY,PLAYER_WIDTH,PLAYER_HEIGHT,'#e6e6e6');
+        context.save();
+        context.translate(this.playerX,this.playerY);
+        context.rotate(this.playerAngle);
+        context.fillStyle = '#e6e6e6';
+        context.fillRect(-PLAYER_WIDTH/2,-PLAYER_HEIGHT/2, PLAYER_WIDTH,PLAYER_HEIGHT);
+        context.fillStyle = '#0026e6';
+        context.fillRect(10,-10, 30,20);
+
+        //colourRect(this.playerX,this.playerY,PLAYER_WIDTH,PLAYER_HEIGHT,'#e6e6e6');
+        context.restore();
     }
     Clamp() {
 

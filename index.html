@@ -135,6 +135,8 @@
         context = canvas.getContext('2d');
         canvas.onmousedown = function() {mouseDown()}
         canvas.onmouseup = function() {mouseUp()}
+        canvas.ontouchstart = function() {mouseDown()}
+        canvas.ontouchcancel = function() {mouseUp()}
         context.width = innerWidth;
         context.height = innerHeight;
 

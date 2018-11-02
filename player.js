@@ -42,17 +42,17 @@ class player {
     }
     Clamp() {
 
-        if (this.playerY + PLAYER_HEIGHT > canvas.height){
-            this.playerY = canvas.height - PLAYER_HEIGHT;
+        if (this.playerY + PLAYER_HEIGHT/2> canvas.height){
+            this.playerY = canvas.height - PLAYER_HEIGHT/2;
         }
-        if (this.playerY < TOPBAR_HEIGHT) {
-            this.playerY = TOPBAR_HEIGHT;
+        if (this.playerY - PLAYER_HEIGHT/2 < TOPBAR_HEIGHT) {
+            this.playerY = PLAYER_HEIGHT/2 + TOPBAR_HEIGHT;
         }
-        if (this.playerX + PLAYER_WIDTH > canvas.width) {
-            this.playerX = canvas.width - PLAYER_WIDTH;
+        if (this.playerX + PLAYER_WIDTH/2 > canvas.width) {
+            this.playerX = canvas.width - PLAYER_WIDTH/2;
         }
-        if (this.playerX < 0) {
-            this.playerX = 0;
+        if (this.playerX - PLAYER_WIDTH/2 < 0) {
+            this.playerX = PLAYER_WIDTH/2;
         }
     }
     Reset() {

@@ -21,6 +21,7 @@
     var upgradeKillAmount = 50;
     var mouseY;
     var mouseX;
+    var mouseIsDown = false;
 
     const TOPBAR_HEIGHT = 100;
 
@@ -117,12 +118,13 @@
     }
 
     function handleMouseClick(evt) {
-        spawnBullet();
+        //spawnBullet();
     }
 
     function handleMouseDown(evt){
         spawnBullet();
     }
+
 
     function getRandomNum(min, max) {
         return Math.floor(Math.random() * (max - min + 1) ) + min;
@@ -131,7 +133,8 @@
     window.onload = function() {
         canvas = document.getElementById('gameCanvas');
         context = canvas.getContext('2d');
-
+        canvas.onmousedown = function() {mouseDown()}
+        canvas.onmouseup = function() {mouseUp()}
         context.width = innerWidth;
         context.height = innerHeight;
 
@@ -153,7 +156,7 @@
                 window.alert("GAME OVER!     Score: " + score);
                 //location.reload();
             }
-
+            //spawnBullet();
             upgradeStuff();
 
         }, 1000/framesPerSecond);
@@ -166,6 +169,14 @@
             });
 
         canvas.addEventListener('mousedown', handleMouseClick);
+
+    }
+
+    function mouseDown(){
+        mouseIsDown = true;
+    }
+    function mouseUp(){
+        mouseIsDown = false;
     }
 
     function upgradeStuff(){
@@ -246,13 +257,17 @@
             players[i].Update(mouseX, mouseY);
         }
 
-        if (keyLeft) spawnBullet(0);
-        if (keyUp) spawnBullet(1);
-        if (keyRight) spawnBullet(2);
-        if (keyDown) spawnBullet(3);
+        // if (keyLeft) spawnBullet();
+        // if (keyUp) spawnBullet();
+        // if (keyRight) spawnBullet();
+        // if (keyDown) spawnBullet();
 
         if (keySpace){
             spawnPlayer();
+        }
+
+        if(mouseIsDown){
+            spawnBullet();
         }
 
 

@@ -1,5 +1,5 @@
 class bullet {
-    Spawn(x,y,dx,dy,angle) {
+    Spawn(x,y,dx,dy,angle,shooter) {
         this.bulletX = 0;
         this.bulletY = 0;
 
@@ -9,49 +9,67 @@ class bullet {
         this.dx = dx;
         this.dy = dy;
         this.active = true;
-        //this.bulletDirection;
-        // this.Up = false;
-        // this.Right = false;
-        // this.p = 0;
+        this.shooter = shooter;// checks if player (0) or enemy(1) is shooting
+
+        if (shooter < 1) this.colour = '#3d89e6';
+        else this.colour = '#ff007e';
     }
     Update() {
-
-        this.bulletX += this.dx*10;
-        this.bulletY += this.dy*10;
-
+        if(this.shooter > 0){
+            this.bulletX -= ENEMY_BULLET_SPEED;
+        }
+        else{
+            this.bulletX += this.dx*10;
+            this.bulletY += this.dy*10;
+        }
         this.Clamp();
-
-        // if (this.bulletDirection == 0) this.bulletX -= BULLET_SPEED;
-        // if (this.bulletDirection == 1) this.bulletY -= BULLET_SPEED;
-        // if (this.bulletDirection == 2) this.bulletX += BULLET_SPEED;
-        // if (this.bulletDirection == 3) this.bulletY += BULLET_SPEED;
     }
     Draw() {
         context.save();
         context.translate(this.bulletX,this.bulletY);
         context.rotate(this.bulletAngle);
-        context.fillStyle = 'grey';
+        context.fillStyle = this.colour;
         context.fillRect(-BULLET_WIDTH/2,-BULLET_HEIGHT/2, BULLET_WIDTH,BULLET_HEIGHT);
         // colourRect(this.bulletX,this.bulletY,BULLET_WIDTH,BULLET_HEIGHT,'grey');
         context.restore();
     }
     CheckCollision(enemies) {
         console.debug(enemies.length);
-        var o;
-        for (o=0; o<enemies.length; o++){
-            // enemies[i].enemyX;
-            if(this.bulletX + BULLET_WIDTH > enemies[o].enemyX &&
-                this.bulletX - ENEMY_WIDTH < enemies[o].enemyX &&
-                this.bulletY - ENEMY_HEIGHT < enemies[o].enemyY &&
-                this.bulletY + BULLET_HEIGHT > enemies[o].enemyY) {
-                enemies[o].Reset();
-                this.active = false;
+        if (this.shooter < 1){
+            let o;
+            for (o=0; o<enemies.length; o++){
+                // enemies[i].enemyX;
+                if(this.bulletX + BULLET_WIDTH > enemies[o].enemyX &&
+                    this.bulletX - ENEMY_WIDTH < enemies[o].enemyX &&
+                    this.bulletY - ENEMY_HEIGHT < enemies[o].enemyY &&
+                    this.bulletY + BULLET_HEIGHT > enemies[o].enemyY) {
+                    enemies[o].Reset();
+                    this.active = false;
 
-                score++;
-                enemyCounter++; // Copyright Jayde Webber
+                    score++;
+                    enemyCounter++; // Copyright Jayde Webber
+                }
+
             }
-
         }
+        else {
+            let o;
+            for (o=0; o<players.length; o++){
+                // enemies[i].enemyX;
+                if(this.bulletX + BULLET_WIDTH > players[o].playerX &&
+                    this.bulletX - PLAYER_WIDTH < players[o].playerX &&
+                    this.bulletY - PLAYER_HEIGHT < players[o].playerY &&
+                    this.bulletY + BULLET_HEIGHT > players[o].playerY) {
+                    players[o].Reset();
+                    this.active = false;
+
+                    score++;
+                    enemyCounter++; // Copyright Jayde Webber
+                }
+
+            }
+        }
+
     }
     Clamp() {
 

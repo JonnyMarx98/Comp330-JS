@@ -24,6 +24,7 @@
     const ENEMY_WIDTH = 50;
     const ENEMY_HEIGHT = 50;
     const ENEMY_DELAY = 200;
+    const ENEMY_BULLET_SPEED = 8;
     var enemyX = 600;
     var enemyY = 500;
     var maxEnemySpeed = 3;
@@ -48,7 +49,6 @@
     const BULLET_WIDTH = 20;
     const BULLET_HEIGHT = 20;
     var BULLET_DELAY = 10;
-    var BULLET_SPEED = 20;
     var i;
     var bulletX = 5000;
     var bulletY = 5000;
@@ -81,6 +81,7 @@
             moveEverything();
             drawEverything();
             spawnEverything();
+            ClampEverything();
             timer += 1/60;
 
             // If player has no lives reset game and display alert
@@ -129,6 +130,13 @@
             newEnemy.Spawn(canvas.width, Math.floor((Math.random() * canvas.height) + 1));
             enemies.push(newEnemy);
         }
+
+        for (i=0; i<enemies.length; i++){
+            if (enemies[i].shoot == true){
+                spawnEnemyBullet(i);
+                enemies[i].shoot = false;
+            }
+        }
         console.log(enemyDelayTimer);
     }
 
@@ -137,8 +145,6 @@
         for (i = 0; i<bullets.length; i++) {
             bullets[i].CheckCollision(enemies);
         }
-
-        ClampEverything();
 
         for (i=0; i<enemies.length; i++){
             enemies[i].Update();
@@ -174,8 +180,7 @@
                 newBullet = new bullet();
                 let dx = Math.cos(players[i].playerAngle);
                 let dy = Math.sin(players[i].playerAngle);
-                console.debug(players[i].playerAngle);
-                newBullet.Spawn(players[i].playerX, players[i].playerY,dx,dy,players[i].playerAngle);
+                newBullet.Spawn(players[i].playerX, players[i].playerY,dx,dy,players[i].playerAngle,0);
                 bullets.push(newBullet);
             }
 
@@ -183,6 +188,12 @@
             //newBullet.directionX = mouseX;
             //newBullet.directionY = mouseY;
         }
+    }
+
+    function spawnEnemyBullet(enemyID) {
+        newBullet = new bullet();
+        newBullet.Spawn(enemies[enemyID].enemyX, enemies[enemyID].enemyY + ENEMY_HEIGHT/2 - BULLET_HEIGHT/2, 0, 0, 0,1);
+        bullets.push(newBullet);
     }
 
     function drawEverything() {

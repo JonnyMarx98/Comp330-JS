@@ -8,6 +8,9 @@ class enemy {
         this.enemySpeed = getRandomNum(1,maxEnemySpeed); //Math.floor((Math.random() * 4) + 2);
         this.direction = getRandomNum(0,1);
         this.count = 60;
+        this.shoot = false;
+        this.shotDelay = 10;
+        this.shotTimer = this.shotDelay;
     }
     Update() {
         // Move to player
@@ -41,6 +44,20 @@ class enemy {
         if(this.enemyX > -100) {
             this.enemyX = this.enemyX - this.enemySpeed;
         }
+
+        let p;
+        for (p = 0; p<players.length; p++) {
+            if(players[p].playerY - PLAYER_HEIGHT < this.enemyY &&
+                players[p].playerY + PLAYER_HEIGHT > this.enemyY){
+                if (this.shotTimer < 0){
+                    this.shotTimer = this.shotDelay;
+                    this.shoot = true;
+                }
+
+            }
+        }
+        this.shotTimer--;
+
     }
     Draw() {
         colourRect(this.enemyX,this.enemyY,ENEMY_WIDTH,ENEMY_HEIGHT,'red');
@@ -53,20 +70,9 @@ class enemy {
                 players[p].playerY - PLAYER_HEIGHT < this.enemyY &&
                 players[p].playerY + PLAYER_HEIGHT > this.enemyY) {
                 resetPlayer(p);
-                playerLives--;
                 this.Reset();
             }
         }
-
-
-        // if (players[0].playerX + PLAYER_WIDTH > this.enemyX &&
-        //     players[0].playerX - PLAYER_WIDTH < this.enemyX &&
-        //     players[0].playerY - PLAYER_HEIGHT < this.enemyY &&
-        //     players[0].playerY + PLAYER_HEIGHT > this.enemyY) {
-        //     resetPlayer();
-        //     playerLives--;
-        //     this.Reset();
-        // }
     }
     Clamp() {
         if (this.enemyY + ENEMY_HEIGHT > canvas.height){

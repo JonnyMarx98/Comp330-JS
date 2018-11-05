@@ -56,6 +56,7 @@ class player {
         }
     }
     Reset() {
+        playerLives--;
         this.playerX = 0;
         this.playerY = 0;
         timer = 0;

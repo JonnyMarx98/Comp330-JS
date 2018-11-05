@@ -45,12 +45,10 @@ class bullet {
                 this.bulletY - ENEMY_HEIGHT < enemies[o].enemyY &&
                 this.bulletY + BULLET_HEIGHT > enemies[o].enemyY) {
                 enemies[o].Reset();
-                if (!upgradeActive){
-                    this.bulletX = undefined;
-                }
+                this.active = false;
 
                 score++;
-                enemyCounter++; // Copyright Jayde Weber
+                enemyCounter++; // Copyright Jayde Webber
             }
 
         }

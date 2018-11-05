@@ -8,6 +8,7 @@ class bullet {
         this.bulletAngle = angle;
         this.dx = dx;
         this.dy = dy;
+        this.active = true;
         //this.bulletDirection;
         // this.Up = false;
         // this.Right = false;
@@ -17,6 +18,8 @@ class bullet {
 
         this.bulletX += this.dx*10;
         this.bulletY += this.dy*10;
+
+        this.Clamp();
 
         // if (this.bulletDirection == 0) this.bulletX -= BULLET_SPEED;
         // if (this.bulletDirection == 1) this.bulletY -= BULLET_SPEED;
@@ -50,6 +53,21 @@ class bullet {
                 enemyCounter++; // Copyright Jayde Weber
             }
 
+        }
+    }
+    Clamp() {
+
+        if (this.bulletY > canvas.height){
+            this.active = false;
+        }
+        if (this.bulletY  < TOPBAR_HEIGHT) {
+            this.active = false;
+        }
+        if (this.bulletX> canvas.width) {
+            this.active = false;
+        }
+        if (this.bulletX < 0) {
+            this.active = false;
         }
     }
 }

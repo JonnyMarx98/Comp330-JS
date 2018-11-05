@@ -18,13 +18,6 @@
 
     var canvas;
     var context;
-    var upgradeTimer = 6;
-    var upgradeActive = false;
-    var upgradeKillAmount = 50;
-    // var mouseY;
-    // var mouseX;
-    // var mouseIsDown = false;
-
     const TOPBAR_HEIGHT = 100;
 
     // Enemy vars
@@ -49,6 +42,7 @@
     var PlayerSpeed = 5
     var newPlayer = new player();
     var players = [];
+    var spawnPlayerDelay = ENEMY_DELAY;
 
     // Bullet vars
     const BULLET_WIDTH = 20;
@@ -78,24 +72,22 @@
         canvas = document.getElementById('gameCanvas');
         context = canvas.getContext('2d');
         clickHandler();
-
-        console.debug(context.width);
-        console.debug(context.height);
-
         spawnPlayer();
 
         // Game Loop
-        var framesPerSecond = 60;
+        let framesPerSecond = 60;
         setInterval(function() {
-            context.clearRect(0,0,canvas.width,canvas.height);
+            //context.clearRect(0,0,canvas.width,canvas.height);
             moveEverything();
             drawEverything();
-            if (playerLives == 0){
+            spawnEverything();
+            timer += 1/60;
+
+            // If player has no lives reset game and display alert
+            if (playerLives < 0){
                 location.reload();
                 window.alert("GAME OVER!     Score: " + score);
-                //location.reload();
             }
-            upgradeStuff();
 
         }, 1000/framesPerSecond);
 
@@ -106,55 +98,31 @@
                 mouseY = mousePos.y;
             });
 
-        //canvas.addEventListener('mousedown', handleMouseClick);
-
-    }
-
-    function mouseDown(){
-        mouseIsDown = true;
-    }
-    function mouseUp(){
-        mouseIsDown = false;
-    }
-
-    function upgradeStuff(){
-        // if (score == upgradeKillAmount && !upgradeActive){
-        //     window.alert("UPGRADE UNLOCKED! Press ENTER");
-        //     upgradeActive = true;
-        //     BULLET_DELAY = 1;
-        //     BULLET_SPEED = 50;
-        //     PlayerSpeed = 10;
-        //     upgradeKillAmount+=100;
-        // }
-        // if (upgradeActive){
-        //     upgradeTimer-= 1/60;
-        // }
-        // if (upgradeTimer < 0){
-        //     BULLET_DELAY = 10;
-        //     BULLET_SPEED = 20;
-        //     PlayerSpeed = 5;
-        //     upgradeActive = false;
-        //     upgradeTimer = 6;
-        // }
     }
 
     function spawnPlayer(){
         newPlayer = new player();
-        newPlayer.Spawn(playerX, playerY);
+        newPlayer.Spawn(0, 0);
         players.push(newPlayer);
     }
 
-    function resetPlayer() {
-        players[0].Reset();
-
+    function resetPlayer(ID) {
+        players[ID].Reset();
     }
 
-
-    function moveEverything() {
-
-        timer += 1/60;
+    function spawnEverything(){
         bulletDelayTimer--;
         enemyDelayTimer--;
+        spawnPlayerDelay--;
+        // if (keySpace && spawnPlayerDelay < 0){
+        //     spawnPlayerDelay = ENEMY_DELAY;
+        if (keySpace){
+            spawnPlayer();
+        }
+
+        if(mouseIsDown){
+            spawnBullet();
+        }
 
         if (enemyDelayTimer < 0 && enemies.length < maxEnemies) {
             enemyDelayTimer = ENEMY_DELAY;
@@ -162,12 +130,10 @@
             newEnemy.Spawn(canvas.width, Math.floor((Math.random() * canvas.height) + 1));
             enemies.push(newEnemy);
         }
-        // if (enemyCounter > 25 && maxEnemySpeed < 10){
-        //     enemyCounter = 0;
-        //     maxEnemySpeed++;
-        // }
+    }
 
 
+    function moveEverything() {
         for (i = 0; i<bullets.length; i++) {
             bullets[i].CheckCollision(enemies);
         }
@@ -175,8 +141,8 @@
         ClampEverything();
 
         for (i=0; i<enemies.length; i++){
-            enemies[i].CheckCollision();
             enemies[i].Update();
+            enemies[i].CheckCollision();
         }
 
         for (i=0; i<players.length; i++){
@@ -188,29 +154,31 @@
         // if (keyRight) spawnBullet();
         // if (keyDown) spawnBullet();
 
-        if (keySpace){
-            spawnPlayer();
-        }
-
-        if(mouseIsDown){
-            spawnBullet();
-        }
-
 
         for (i = 0; i<bullets.length; i++) {
+            console.log(i);
             bullets[i].Update();
+            // delete bullets off screen
+            if (bullets[i].active == false){
+                bullets.splice(i,1);
+                i--;
+            }
         }
     }
 
     function spawnBullet(){
         if (bulletDelayTimer < 0) {
             bulletDelayTimer = BULLET_DELAY;
-            newBullet = new bullet();
-            let dx = Math.cos(players[0].playerAngle);
-            let dy = Math.sin(players[0].playerAngle);
-            console.debug(players[0].playerAngle);
-            newBullet.Spawn(players[0].playerX, players[0].playerY,dx,dy,players[0].playerAngle);
-            bullets.push(newBullet);
+
+            for (i=0; i<players.length; i++){
+                newBullet = new bullet();
+                let dx = Math.cos(players[i].playerAngle);
+                let dy = Math.sin(players[i].playerAngle);
+                console.debug(players[i].playerAngle);
+                newBullet.Spawn(players[i].playerX, players[i].playerY,dx,dy,players[i].playerAngle);
+                bullets.push(newBullet);
+            }
+
             //newBullet.bulletDirection = direction;
             //newBullet.directionX = mouseX;
             //newBullet.directionY = mouseY;
@@ -218,16 +186,12 @@
     }
 
     function drawEverything() {
-
-        //context.clearRect(0,0,canvas.width,canvas.height);
         // next line blanks out the screen with grey
         colourRect(0,0,canvas.width,canvas.height,'#1d1d20');
         // top bar
         colourRect(0,0,canvas.width,TOPBAR_HEIGHT,'grey');
-
-        // this is the player
+        // draw the players
         for (i = 0; i < players.length; i++) {
-
             players[i].Draw();
         }
         // draw the enemies
@@ -253,7 +217,7 @@
 
     function displayText(text, x, y, colour) {
         context.font="60px Arial";
-        context.font = "30px Comic Sans MS";
+        context.font = "30px Impact";
         context.fillStyle = colour;
         //context.textAlign = "center";
         context.fillText(text, x, y);

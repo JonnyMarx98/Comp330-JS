@@ -46,17 +46,27 @@ class enemy {
         colourRect(this.enemyX,this.enemyY,ENEMY_WIDTH,ENEMY_HEIGHT,'red');
     }
     CheckCollision() {
-        // for (i = 0; i<players.length; i++) {
-        //
-        // }
-        if (players[0].playerX + PLAYER_WIDTH > this.enemyX &&
-            players[0].playerX - PLAYER_WIDTH < this.enemyX &&
-            players[0].playerY - PLAYER_HEIGHT < this.enemyY &&
-            players[0].playerY + PLAYER_HEIGHT > this.enemyY) {
-            resetPlayer();
-            playerLives--;
-            this.Reset();
+        let p;
+        for (p = 0; p<players.length; p++) {
+            if (players[p].playerX + PLAYER_WIDTH > this.enemyX &&
+                players[p].playerX - PLAYER_WIDTH < this.enemyX &&
+                players[p].playerY - PLAYER_HEIGHT < this.enemyY &&
+                players[p].playerY + PLAYER_HEIGHT > this.enemyY) {
+                resetPlayer(p);
+                playerLives--;
+                this.Reset();
+            }
         }
+
+
+        // if (players[0].playerX + PLAYER_WIDTH > this.enemyX &&
+        //     players[0].playerX - PLAYER_WIDTH < this.enemyX &&
+        //     players[0].playerY - PLAYER_HEIGHT < this.enemyY &&
+        //     players[0].playerY + PLAYER_HEIGHT > this.enemyY) {
+        //     resetPlayer();
+        //     playerLives--;
+        //     this.Reset();
+        // }
     }
     Clamp() {
         if (this.enemyY + ENEMY_HEIGHT > canvas.height){

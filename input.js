@@ -64,3 +64,10 @@ function clickHandler(){
     canvas.ontouchstart = function() {mouseDown()}
     canvas.ontouchcancel = function() {mouseUp()}
 }
+
+function mouseDown(){
+    mouseIsDown = true;
+}
+function mouseUp(){
+    mouseIsDown = false;
+}

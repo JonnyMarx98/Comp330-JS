@@ -46,7 +46,10 @@ class enemy {
         colourRect(this.enemyX,this.enemyY,ENEMY_WIDTH,ENEMY_HEIGHT,'red');
     }
     CheckCollision() {
-        if(players[0].playerX + PLAYER_WIDTH > this.enemyX &&
+        // for (i = 0; i<players.length; i++) {
+        //
+        // }
+        if (players[0].playerX + PLAYER_WIDTH > this.enemyX &&
             players[0].playerX - PLAYER_WIDTH < this.enemyX &&
             players[0].playerY - PLAYER_HEIGHT < this.enemyY &&
             players[0].playerY + PLAYER_HEIGHT > this.enemyY) {

@@ -6,6 +6,9 @@
     <script src="bullet.js"></script>
     <script src="enemy.js"></script>
     <script src="player.js"></script>
+    <script src="input_keycodes.js"></script>
+    <script src="input.js"></script>
+
 </head>
 <canvas id="gameCanvas" width= "900" height="600"></canvas>
 
@@ -15,13 +18,12 @@
 
     var canvas;
     var context;
-    var gravity = 5;
     var upgradeTimer = 6;
     var upgradeActive = false;
     var upgradeKillAmount = 50;
-    var mouseY;
-    var mouseX;
-    var mouseIsDown = false;
+    // var mouseY;
+    // var mouseX;
+    // var mouseIsDown = false;
 
     const TOPBAR_HEIGHT = 100;
 
@@ -63,72 +65,9 @@
     var destroyBullet = false;
     //var bulletDirection = 0;
 
-    // Keys
-    var keyW = false;
-    var keyA = false;
-    var keyS = false;
-    var keyD = false;
-    var keySpace = false;
-    var keyUp = false;
-    var keyDown = false;
-    var keyLeft = false;
-    var keyRight = false;
-
     var timer = 0;
     var score = 0;
     var enemyCounter = 0;
-
-
-    window.addEventListener("keydown", keyDownHandler, false);
-    window.addEventListener("keyup", keyUpHandler, false);
-    window.addEventListener('touchstart', function(e) {
-        // Cache the client X/Y coordinates
-        mouseX = e.touches[0].clientX;
-        mouseY = e.touches[0].clientY;
-    }, false);
-
-    function calculateMousePos(evt) {
-        var rect = canvas.getBoundingClientRect();
-        var root = document.documentElement;
-        var mouseX = evt.clientX - rect.left - root.scrollLeft;
-        var mouseY = evt.clientY - rect.top - root.scrollTop;
-        return {
-            x:mouseX,
-            y:mouseY
-        };
-    }
-
-    function keyDownHandler(e) {
-        if(e.keyCode == 68) keyD = true;
-        if(e.keyCode == 83) keyS = true;
-        if(e.keyCode == 65) keyA = true;
-        if(e.keyCode == 87) keyW = true;
-        if(e.keyCode == 32) keySpace = true;
-        if(e.keyCode == 37) keyLeft = true;
-        if(e.keyCode == 38) keyUp = true;
-        if(e.keyCode == 39) keyRight = true;
-        if(e.keyCode == 40) keyDown = true;
-
-    }
-    function keyUpHandler(e) {
-        if(e.keyCode == 68) keyD = false;
-        if(e.keyCode == 83) keyS = false;
-        if(e.keyCode == 65) keyA = false;
-        if(e.keyCode == 87) keyW = false;
-        if(e.keyCode == 32) keySpace = false;
-        if(e.keyCode == 37) keyLeft = false;
-        if(e.keyCode == 38) keyUp = false;
-        if(e.keyCode == 39) keyRight = false;
-        if(e.keyCode == 40) keyDown = false;
-    }
-
-    function handleMouseClick(evt) {
-        //spawnBullet();
-    }
-
-    function handleMouseDown(evt){
-        spawnBullet();
-    }
 
 
     function getRandomNum(min, max) {
@@ -138,32 +77,24 @@
     window.onload = function() {
         canvas = document.getElementById('gameCanvas');
         context = canvas.getContext('2d');
-        canvas.onmousedown = function() {mouseDown()}
-        canvas.onmouseup = function() {mouseUp()}
-        canvas.ontouchstart = function() {mouseDown()}
-        canvas.ontouchcancel = function() {mouseUp()}
-        context.width = innerWidth;
-        context.height = innerHeight;
+        clickHandler();
 
         console.debug(context.width);
         console.debug(context.height);
 
         spawnPlayer();
 
+        // Game Loop
         var framesPerSecond = 60;
         setInterval(function() {
             context.clearRect(0,0,canvas.width,canvas.height);
             moveEverything();
             drawEverything();
-
-            //console.debug(mouseX + " " + mouseY);
-
             if (playerLives == 0){
                 location.reload();
                 window.alert("GAME OVER!     Score: " + score);
                 //location.reload();
             }
-            //spawnBullet();
             upgradeStuff();
 
         }, 1000/framesPerSecond);
@@ -175,7 +106,7 @@
                 mouseY = mousePos.y;
             });
 
-        canvas.addEventListener('mousedown', handleMouseClick);
+        //canvas.addEventListener('mousedown', handleMouseClick);
 
     }
 
@@ -207,14 +138,6 @@
         // }
     }
 
-
-    function Gravity(){
-        playerY += gravity;
-        enemyY += gravity;
-    }
-
-
-
     function spawnPlayer(){
         newPlayer = new player();
         newPlayer.Spawn(playerX, playerY);
@@ -222,16 +145,12 @@
     }
 
     function resetPlayer() {
-        // playerX = 0;
-        // playerY = 0;
-        // timer = 0;
         players[0].Reset();
 
     }
 
 
     function moveEverything() {
-        //Gravity();
 
         timer += 1/60;
         bulletDelayTimer--;

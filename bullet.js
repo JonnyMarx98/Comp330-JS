@@ -47,7 +47,7 @@ class bullet {
                     this.active = false;
 
                     score++;
-                    enemyCounter++; // Copyright Jayde Webber
+                    enemyCounter++;
                 }
 
             }
@@ -64,7 +64,7 @@ class bullet {
                     this.active = false;
 
                     score++;
-                    enemyCounter++; // Copyright Jayde Webber
+                    enemyCounter++;
                 }
 
             }

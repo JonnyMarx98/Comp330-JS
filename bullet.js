@@ -12,7 +12,7 @@ class bullet {
         this.shooter = shooter;// checks if player (0) or enemy(1) is shooting
 
         if (shooter < 1) this.colour = '#3d89e6';
-        else this.colour = '#ff007e';
+        else this.colour = '#ff007e'; // pink
     }
     Update() {
         if(this.shooter > 0){

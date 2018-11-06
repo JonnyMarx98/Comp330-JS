@@ -15,7 +15,6 @@
 </html>
 
 <script>
-
     var canvas;
     var context;
     const TOPBAR_HEIGHT = 100;
@@ -73,6 +72,7 @@
         context = canvas.getContext('2d');
         clickHandler();
         spawnPlayer();
+        canvas.style.cursor = "url(CrosshairNormal.cur), default";
 
         // Game Loop
         let framesPerSecond = 60;
@@ -137,7 +137,6 @@
                 enemies[i].shoot = false;
             }
         }
-        console.log(enemyDelayTimer);
     }
 
 
@@ -162,7 +161,6 @@
 
 
         for (i = 0; i<bullets.length; i++) {
-            console.log(i);
             bullets[i].Update();
             // delete bullets off screen
             if (bullets[i].active == false){
@@ -183,10 +181,6 @@
                 newBullet.Spawn(players[i].playerX, players[i].playerY,dx,dy,players[i].playerAngle,0);
                 bullets.push(newBullet);
             }
-
-            //newBullet.bulletDirection = direction;
-            //newBullet.directionX = mouseX;
-            //newBullet.directionY = mouseY;
         }
     }
 

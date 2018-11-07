@@ -13,19 +13,6 @@ class enemy {
         this.shotTimer = this.shotDelay;
     }
     Update() {
-        // Move to player
-        // if(this.enemyY < playerY) {s
-        //     this.enemyY = this.enemyY + this.enemySpeed;
-        // }
-        // if(this.enemyY > playerY) {
-        //     this.enemyY = this.enemyY - this.enemySpeed;
-        // }
-        // if(this.enemyX < playerX) {
-        //     this.enemyX = this.enemyX + this.enemySpeed;
-        // }
-        // if(this.enemyX > playerX) {
-        //     this.enemyX = this.enemyX - this.enemySpeed;
-        // }
         if (this.direction < 0.5){
             this.enemyY -= getRandomNum(0,4);
             this.direction = 0;
@@ -65,10 +52,10 @@ class enemy {
     CheckCollision() {
         let p;
         for (p = 0; p<players.length; p++) {
-            if (players[p].playerX + PLAYER_WIDTH > this.enemyX &&
-                players[p].playerX - PLAYER_WIDTH < this.enemyX &&
-                players[p].playerY - PLAYER_HEIGHT < this.enemyY &&
-                players[p].playerY + PLAYER_HEIGHT > this.enemyY) {
+            if (players[p].playerX + PLAYER_WIDTH/2 > this.enemyX &&
+                players[p].playerX - PLAYER_WIDTH/2 - ENEMY_WIDTH < this.enemyX &&
+                players[p].playerY - PLAYER_HEIGHT/2 - ENEMY_HEIGHT < this.enemyY &&
+                players[p].playerY + PLAYER_HEIGHT/2 > this.enemyY) {
                 resetPlayer(p);
                 this.Reset();
             }

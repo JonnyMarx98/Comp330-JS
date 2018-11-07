@@ -39,10 +39,10 @@ class bullet {
             let o;
             for (o=0; o<enemies.length; o++){
                 // enemies[i].enemyX;
-                if(this.bulletX + BULLET_WIDTH > enemies[o].enemyX &&
-                    this.bulletX - ENEMY_WIDTH < enemies[o].enemyX &&
-                    this.bulletY - ENEMY_HEIGHT < enemies[o].enemyY &&
-                    this.bulletY + BULLET_HEIGHT > enemies[o].enemyY) {
+                if(this.bulletX + BULLET_WIDTH/2 > enemies[o].enemyX &&
+                    this.bulletX - ENEMY_WIDTH - BULLET_WIDTH/2 < enemies[o].enemyX &&
+                    this.bulletY - ENEMY_HEIGHT - BULLET_HEIGHT/2 < enemies[o].enemyY &&
+                    this.bulletY + BULLET_HEIGHT/2 > enemies[o].enemyY) {
                     enemies[o].Reset();
                     this.active = false;
 
@@ -56,10 +56,10 @@ class bullet {
             let o;
             for (o=0; o<players.length; o++){
                 // enemies[i].enemyX;
-                if(this.bulletX + BULLET_WIDTH > players[o].playerX &&
-                    this.bulletX - PLAYER_WIDTH < players[o].playerX &&
-                    this.bulletY - (PLAYER_HEIGHT + BULLET_HEIGHT)< players[o].playerY &&
-                    this.bulletY + (PLAYER_HEIGHT - BULLET_HEIGHT) > players[o].playerY) {
+                if(this.bulletX + PLAYER_HEIGHT/2 + BULLET_HEIGHT/2 > players[o].playerX &&
+                    this.bulletX - PLAYER_WIDTH/2 - BULLET_WIDTH/2 < players[o].playerX &&
+                    this.bulletY - PLAYER_HEIGHT/2 - BULLET_HEIGHT/2 < players[o].playerY &&
+                    this.bulletY + PLAYER_HEIGHT/2 + BULLET_HEIGHT/2 > players[o].playerY) {
                     players[o].Reset();
                     this.active = false;
 

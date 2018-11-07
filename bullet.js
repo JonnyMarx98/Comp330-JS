@@ -12,7 +12,7 @@ class bullet {
         this.shooter = shooter;// checks if player (0) or enemy(1) is shooting
 
         if (shooter < 1) this.colour = '#3d89e6';
-        else this.colour = '#ff007e'; // pink
+        else this.colour = '#ff007e';
     }
     Update() {
         if(this.shooter > 0){
@@ -58,8 +58,8 @@ class bullet {
                 // enemies[i].enemyX;
                 if(this.bulletX + BULLET_WIDTH > players[o].playerX &&
                     this.bulletX - PLAYER_WIDTH < players[o].playerX &&
-                    this.bulletY - PLAYER_HEIGHT < players[o].playerY &&
-                    this.bulletY + BULLET_HEIGHT > players[o].playerY) {
+                    this.bulletY - (PLAYER_HEIGHT + BULLET_HEIGHT)< players[o].playerY &&
+                    this.bulletY + (PLAYER_HEIGHT - BULLET_HEIGHT) > players[o].playerY) {
                     players[o].Reset();
                     this.active = false;
 

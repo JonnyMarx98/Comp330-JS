@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>JonnyIsGud</title>
+    <title>ShootyShootDodgeyDodge</title>
     <script src="bullet.js"></script>
     <script src="enemy.js"></script>
     <script src="player.js"></script>
@@ -24,8 +24,6 @@
     const ENEMY_HEIGHT = 50;
     const ENEMY_DELAY = 200;
     const ENEMY_BULLET_SPEED = 8;
-    var enemyX = 600;
-    var enemyY = 500;
     var maxEnemySpeed = 3;
     var enemies = [];
     var newEnemy = new enemy();
@@ -75,14 +73,14 @@
         canvas.style.cursor = "url(CrosshairNormal.cur), default";
 
         // Game Loop
-        let framesPerSecond = 60;
+        let framesPerSecond = 75;
         setInterval(function() {
             //context.clearRect(0,0,canvas.width,canvas.height);
             moveEverything();
             drawEverything();
             spawnEverything();
             ClampEverything();
-            timer += 1/60;
+            timer += 1/75;
 
             // If player has no lives reset game and display alert
             if (playerLives < 0){
@@ -106,6 +104,11 @@
         newPlayer.Spawn(0, 0);
         players.push(newPlayer);
     }
+    function spawnEnemy(){
+        newEnemy = new enemy();
+        newEnemy.Spawn(canvas.width, Math.floor((Math.random() * canvas.height) + 1));
+        enemies.push(newEnemy);
+    }
 
     function resetPlayer(ID) {
         players[ID].Reset();
@@ -115,22 +118,18 @@
         bulletDelayTimer--;
         enemyDelayTimer--;
         spawnPlayerDelay--;
+
         if (keySpace && spawnPlayerDelay < 0){
             spawnPlayerDelay = 20;
             spawnPlayer();
         }
-
         if(mouseIsDown){
             spawnBullet();
         }
-
         if (enemyDelayTimer < 0 && enemies.length < maxEnemies) {
             enemyDelayTimer = ENEMY_DELAY;
-            newEnemy = new enemy();
-            newEnemy.Spawn(canvas.width, Math.floor((Math.random() * canvas.height) + 1));
-            enemies.push(newEnemy);
+            spawnEnemy();
         }
-
         for (i=0; i<enemies.length; i++){
             if (enemies[i].shoot == true){
                 spawnEnemyBullet(i);
@@ -153,12 +152,6 @@
         for (i=0; i<players.length; i++){
             players[i].Update(mouseX, mouseY);
         }
-
-        // if (keyLeft) spawnBullet();
-        // if (keyUp) spawnBullet();
-        // if (keyRight) spawnBullet();
-        // if (keyDown) spawnBullet();
-
 
         for (i = 0; i<bullets.length; i++) {
             bullets[i].Update();

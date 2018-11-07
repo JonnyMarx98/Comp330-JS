@@ -33,7 +33,7 @@ class bullet {
         // colourRect(this.bulletX,this.bulletY,BULLET_WIDTH,BULLET_HEIGHT,'grey');
         context.restore();
     }
-    CheckCollision(enemies) {
+    CheckCollision() {
         console.debug(enemies.length);
         if (this.shooter < 1){
             let o;
@@ -45,9 +45,7 @@ class bullet {
                     this.bulletY + BULLET_HEIGHT/2 > enemies[o].enemyY) {
                     enemies[o].Reset();
                     this.active = false;
-
                     score++;
-                    enemyCounter++;
                 }
 
             }
@@ -63,8 +61,6 @@ class bullet {
                     players[o].Reset();
                     this.active = false;
 
-                    score++;
-                    enemyCounter++;
                 }
 
             }

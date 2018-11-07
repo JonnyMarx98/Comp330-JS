@@ -1,8 +1,5 @@
 class player {
     Spawn(x,y) {
-        this.playerX = 0;
-        this.playerY = 0;
-
         this.playerX = x;
         this.playerY = y;
         this.playerAngle;
@@ -44,7 +41,6 @@ class player {
         context.restore();
     }
     Clamp() {
-
         if (this.playerY + PLAYER_HEIGHT/2> canvas.height){ //.
             this.playerY = canvas.height - PLAYER_HEIGHT/2;
         }
@@ -61,7 +57,7 @@ class player {
     Reset() {
         playerLives--;
         this.playerX = 0;
-        this.playerY = 0;
+        this.playerY = Math.floor((Math.random() * canvas.height) + 1);
         timer = 0;
     }
 }

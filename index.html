@@ -13,7 +13,13 @@
 <canvas id="gameCanvas" width= "900" height="600"></canvas>
 
 </html>
-
+<!--Instructions-->
+<br> Move: WASD
+<br> Shoot: hold left click
+<br> You lose a life if:
+<br> - You get shot
+<br> - You touch an enemy
+<br> - An enemy touches the left of the screen
 <script>
     var canvas;
     var context;
@@ -29,36 +35,30 @@
     var newEnemy = new enemy();
     var enemyDelayTimer = ENEMY_DELAY;
     var maxEnemies = 5;
-    //var spawnDelay = 60;
 
     // Player vars
     const PLAYER_WIDTH = 50;
     const PLAYER_HEIGHT = 50;
-    var playerX = 300;
-    var playerY = 300;
     var playerLives = 3;
-    var PlayerSpeed = 5
+    var PlayerSpeed = 5;
     var newPlayer = new player();
     var players = [];
-    var spawnPlayerDelay = ENEMY_DELAY;
 
     // Bullet vars
     const BULLET_WIDTH = 20;
     const BULLET_HEIGHT = 20;
     var BULLET_DELAY = 10;
-    var i;
     var bulletX = 5000;
     var bulletY = 5000;
     var bulletDelayTimer = BULLET_DELAY;
     var bullets = [];
     var NUMBER_OF_BULLETS = 1;
     var newBullet = new bullet;
-    var destroyBullet = false;
-    //var bulletDirection = 0;
+    //var destroyBullet = false;
 
     var timer = 0;
     var score = 0;
-    var enemyCounter = 0;
+    var i;
 
 
     function getRandomNum(min, max) {
@@ -76,7 +76,7 @@
         let framesPerSecond = 75;
         setInterval(function() {
             //context.clearRect(0,0,canvas.width,canvas.height);
-            moveEverything();
+            updateEverything();
             drawEverything();
             spawnEverything();
             ClampEverything();
@@ -101,7 +101,7 @@
 
     function spawnPlayer(){
         newPlayer = new player();
-        newPlayer.Spawn(0, 0);
+        newPlayer.Spawn(0, Math.floor((Math.random() * canvas.height) + 1));
         players.push(newPlayer);
     }
     function spawnEnemy(){
@@ -117,12 +117,6 @@
     function spawnEverything(){
         bulletDelayTimer--;
         enemyDelayTimer--;
-        spawnPlayerDelay--;
-
-        if (keySpace && spawnPlayerDelay < 0){
-            spawnPlayerDelay = 20;
-            spawnPlayer();
-        }
         if(mouseIsDown){
             spawnBullet();
         }
@@ -139,9 +133,10 @@
     }
 
 
-    function moveEverything() {
+    function updateEverything() {
+
         for (i = 0; i<bullets.length; i++) {
-            bullets[i].CheckCollision(enemies);
+            bullets[i].CheckCollision();
         }
 
         for (i=0; i<enemies.length; i++){
@@ -150,7 +145,7 @@
         }
 
         for (i=0; i<players.length; i++){
-            players[i].Update(mouseX, mouseY);
+            players[i].Update(mouseX, mouseY,i);
         }
 
         for (i = 0; i<bullets.length; i++) {

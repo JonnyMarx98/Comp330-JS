@@ -1,8 +1,5 @@
 class enemy {
     Spawn(x,y) {
-        this.enemyX = 0;
-        this.enemyY = 0;
-
         this.enemyX = x;
         this.enemyY = y;
         this.enemySpeed = getRandomNum(1,maxEnemySpeed); //Math.floor((Math.random() * 4) + 2);
@@ -72,14 +69,12 @@ class enemy {
             this.enemyX = canvas.width - ENEMY_WIDTH;
         }
         if (this.enemyX < 0) {
-            //this.enemyX = 0;
-            this.enemyX = undefined;
+            this.Reset();
             playerLives--;
         }
     }
     Reset(){
         this.enemyX = canvas.width;
         this.enemyY = Math.floor((Math.random() * canvas.height) + 1);
-        //enemySpeed = 1;
     }
 }

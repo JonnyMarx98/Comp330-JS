@@ -34,11 +34,9 @@ class bullet {
         context.restore();
     }
     CheckCollision() {
-        console.debug(enemies.length);
         if (this.shooter < 1){
             let o;
             for (o=0; o<enemies.length; o++){
-                // enemies[i].enemyX;
                 if(this.bulletX + BULLET_WIDTH/2 > enemies[o].enemyX &&
                     this.bulletX - ENEMY_WIDTH - BULLET_WIDTH/2 < enemies[o].enemyX &&
                     this.bulletY - ENEMY_HEIGHT - BULLET_HEIGHT/2 < enemies[o].enemyY &&
@@ -53,7 +51,6 @@ class bullet {
         else {
             let o;
             for (o=0; o<players.length; o++){
-                // enemies[i].enemyX;
                 if(this.bulletX + PLAYER_HEIGHT/2 + BULLET_HEIGHT/2 > players[o].playerX &&
                     this.bulletX - PLAYER_WIDTH/2 - BULLET_WIDTH/2 < players[o].playerX &&
                     this.bulletY - PLAYER_HEIGHT/2 - BULLET_HEIGHT/2 < players[o].playerY &&

@@ -23,9 +23,6 @@ class player {
         let dy = mouse_y - this.playerY;
         this.playerAngle = Math.atan2(dy,dx);
 
-        console.debug(this.playerY);
-        console.debug(this.playerX);
-
 
     }
     Draw() {

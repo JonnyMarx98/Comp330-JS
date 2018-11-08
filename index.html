@@ -166,7 +166,8 @@
                 newBullet = new bullet();
                 let dx = Math.cos(players[i].playerAngle);
                 let dy = Math.sin(players[i].playerAngle);
-                newBullet.Spawn(players[i].playerX, players[i].playerY,dx,dy,players[i].playerAngle,0);
+                newBullet.Spawn(players[i].playerX, players[i].playerY,
+                    dx,dy,players[i].playerAngle,0);
                 bullets.push(newBullet);
             }
         }

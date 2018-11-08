@@ -22,8 +22,6 @@ class player {
         let dx = mouse_x - this.playerX;
         let dy = mouse_y - this.playerY;
         this.playerAngle = Math.atan2(dy,dx);
-
-
     }
     Draw() {
         context.save();

@@ -15,9 +15,8 @@ class bullet {
         else this.colour = '#ff007e';
     }
     Update() {
-        if(this.shooter > 0){
-            this.bulletX -= ENEMY_BULLET_SPEED;
-        }
+        // if shooter is enemy
+        if(this.shooter > 0) this.bulletX -= ENEMY_BULLET_SPEED;
         else{
             this.bulletX += this.dx*10;
             this.bulletY += this.dy*10;

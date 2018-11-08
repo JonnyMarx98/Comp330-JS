@@ -10,6 +10,7 @@ class enemy {
         this.shotTimer = this.shotDelay;
     }
     Update() {
+        // Moves enemy up and down
         if (this.direction < 0.5){
             this.enemyY -= getRandomNum(0,4);
             this.direction = 0;
@@ -24,11 +25,10 @@ class enemy {
             this.count = 60;
         }
 
+        // moves enemy left
+        this.enemyX = this.enemyX - this.enemySpeed;
 
-        if(this.enemyX > -100) {
-            this.enemyX = this.enemyX - this.enemySpeed;
-        }
-
+        // if a player is in line with the enemy shoot
         let p;
         for (p = 0; p<players.length; p++) {
             if(players[p].playerY - PLAYER_HEIGHT < this.enemyY &&
@@ -47,6 +47,7 @@ class enemy {
         colourRect(this.enemyX,this.enemyY,ENEMY_WIDTH,ENEMY_HEIGHT,'red');
     }
     CheckCollision() {
+        // Check player collision
         let p;
         for (p = 0; p<players.length; p++) {
             if (players[p].playerX + PLAYER_WIDTH/2 > this.enemyX &&

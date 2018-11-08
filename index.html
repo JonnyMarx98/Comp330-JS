@@ -21,25 +21,29 @@
 <br> - You touch an enemy
 <br> - An enemy touches the left of the screen
 <script>
+    const TOPBAR_HEIGHT = 100;
     var canvas;
     var context;
-    const TOPBAR_HEIGHT = 100;
+    var timer = 0;
+    var score = 0;
+    var i;
 
     // Enemy vars
     const ENEMY_WIDTH = 50;
     const ENEMY_HEIGHT = 50;
-    const ENEMY_DELAY = 200;
+    const ENEMY_SPAWN_DELAY = 200;
     const ENEMY_BULLET_SPEED = 8;
     var maxEnemySpeed = 3;
     var enemies = [];
     var newEnemy = new enemy();
-    var enemyDelayTimer = ENEMY_DELAY;
+    var enemyDelayTimer = ENEMY_SPAWN_DELAY;
     var maxEnemies = 5;
 
     // Player vars
     const PLAYER_WIDTH = 50;
     const PLAYER_HEIGHT = 50;
-    var playerLives = 3;
+    const PLAYER_BULLET_SPEED = 10;
+    var playerLives = 5;
     var PlayerSpeed = 5;
     var newPlayer = new player();
     var players = [];
@@ -48,17 +52,9 @@
     const BULLET_WIDTH = 20;
     const BULLET_HEIGHT = 20;
     var BULLET_DELAY = 10;
-    var bulletX = 5000;
-    var bulletY = 5000;
     var bulletDelayTimer = BULLET_DELAY;
     var bullets = [];
-    var NUMBER_OF_BULLETS = 1;
     var newBullet = new bullet;
-    //var destroyBullet = false;
-
-    var timer = 0;
-    var score = 0;
-    var i;
 
 
     function getRandomNum(min, max) {
@@ -75,19 +71,11 @@
         // Game Loop
         let framesPerSecond = 75;
         setInterval(function() {
-            //context.clearRect(0,0,canvas.width,canvas.height);
             updateEverything();
             drawEverything();
             spawnEverything();
-            ClampEverything();
+            clampEverything();
             timer += 1/75;
-
-            // If player has no lives reset game and display alert
-            if (playerLives < 0){
-                location.reload();
-                window.alert("GAME OVER!     Score: " + score);
-            }
-
         }, 1000/framesPerSecond);
 
         canvas.addEventListener('mousemove',
@@ -98,56 +86,27 @@
             });
 
     }
-
-    function spawnPlayer(){
-        newPlayer = new player();
-        newPlayer.Spawn(0, Math.floor((Math.random() * canvas.height) + 1));
-        players.push(newPlayer);
-    }
-    function spawnEnemy(){
-        newEnemy = new enemy();
-        newEnemy.Spawn(canvas.width, Math.floor((Math.random() * canvas.height) + 1));
-        enemies.push(newEnemy);
-    }
-
-    function resetPlayer(ID) {
-        players[ID].Reset();
-    }
-
-    function spawnEverything(){
-        bulletDelayTimer--;
-        enemyDelayTimer--;
-        if(mouseIsDown){
-            spawnBullet();
-        }
-        if (enemyDelayTimer < 0 && enemies.length < maxEnemies) {
-            enemyDelayTimer = ENEMY_DELAY;
-            spawnEnemy();
-        }
-        for (i=0; i<enemies.length; i++){
-            if (enemies[i].shoot == true){
-                spawnEnemyBullet(i);
-                enemies[i].shoot = false;
-            }
-        }
-    }
-
-
     function updateEverything() {
-
+        bulletDelayTimer--;
+        // If player has no lives reset game and display alert
+        if (playerLives === 0){
+            location.reload();
+            window.alert("GAME OVER!     Score: " + score);
+        }
+        // Check bullet collisions
         for (i = 0; i<bullets.length; i++) {
             bullets[i].CheckCollision();
         }
-
+        // Update enemies and check collisions
         for (i=0; i<enemies.length; i++){
             enemies[i].Update();
             enemies[i].CheckCollision();
         }
-
+        // Update players
         for (i=0; i<players.length; i++){
             players[i].Update(mouseX, mouseY,i);
         }
-
+        // Update bullets and delete inactive bullets
         for (i = 0; i<bullets.length; i++) {
             bullets[i].Update();
             // delete bullets off screen
@@ -157,28 +116,6 @@
             }
         }
     }
-
-    function spawnBullet(){
-        if (bulletDelayTimer < 0) {
-            bulletDelayTimer = BULLET_DELAY;
-
-            for (i=0; i<players.length; i++){
-                newBullet = new bullet();
-                let dx = Math.cos(players[i].playerAngle);
-                let dy = Math.sin(players[i].playerAngle);
-                newBullet.Spawn(players[i].playerX, players[i].playerY,
-                    dx,dy,players[i].playerAngle,0);
-                bullets.push(newBullet);
-            }
-        }
-    }
-
-    function spawnEnemyBullet(enemyID) {
-        newBullet = new bullet();
-        newBullet.Spawn(enemies[enemyID].enemyX, enemies[enemyID].enemyY + ENEMY_HEIGHT/2 - BULLET_HEIGHT/2, 0, 0, 0,1);
-        bullets.push(newBullet);
-    }
-
     function drawEverything() {
         // next line blanks out the screen with grey
         colourRect(0,0,canvas.width,canvas.height,'#1d1d20');
@@ -196,35 +133,80 @@
         for (i = 0; i<bullets.length; i++) {
             bullets[i].Draw();
         }
+        // Display time, lives and score
         displayText("Time: " + timer.toFixed(2), 50, 75, "red");
         displayText("Score: " + score.toFixed(0), canvas.width - 200, 75, "red");
-        //displayText("MaxEnemies: " + maxEnemies.toFixed(0), 300, 75, "red");
         displayText("Lives: " + playerLives.toFixed(0), canvas.width - 600, 75, "#52e633");
 
     }
-
+    function spawnEverything(){
+        if(mouseIsDown){
+            spawnBullet();
+        }
+        // Spawn delay
+        enemyDelayTimer--;
+        if (enemyDelayTimer < 0 && enemies.length < maxEnemies) {
+            enemyDelayTimer = ENEMY_SPAWN_DELAY;
+            spawnEnemy();
+        }
+        // Spawn enemy bullets
+        for (i=0; i<enemies.length; i++){
+            if (enemies[i].shoot == true){
+                spawnEnemyBullet(i);
+                enemies[i].shoot = false;
+            }
+        }
+    }
+    function clampEverything(){
+        // Clamp all players to the screen
+        for (i = 0; i<players.length; i++) {
+            players[i].Clamp();
+        }
+        // Clamp all enemies to the screen
+        for (i = 0; i<enemies.length; i++) {
+            enemies[i].Clamp();
+        }
+    }
+    function spawnPlayer(){
+        newPlayer = new player();
+        newPlayer.Spawn(0, Math.floor((Math.random() * canvas.height) + 1));
+        players.push(newPlayer);
+    }
+    function spawnEnemy(){
+        newEnemy = new enemy();
+        newEnemy.Spawn(canvas.width, Math.floor((Math.random() * canvas.height) + 1));
+        enemies.push(newEnemy);
+    }
+    function resetPlayer(ID) {
+        players[ID].Reset();
+    }
+    function spawnBullet(){
+        if (bulletDelayTimer < 0) {
+            bulletDelayTimer = BULLET_DELAY;
+            for (i=0; i<players.length; i++){
+                newBullet = new bullet();
+                // Calculates the bullet direction using the player angle
+                let dx = Math.cos(players[i].playerAngle);
+                let dy = Math.sin(players[i].playerAngle);
+                newBullet.Spawn(players[i].playerX, players[i].playerY,dx,dy,players[i].playerAngle,0);
+                bullets.push(newBullet);
+            }
+        }
+    }
+    function spawnEnemyBullet(enemyID) {
+        newBullet = new bullet();
+        newBullet.Spawn(enemies[enemyID].enemyX, enemies[enemyID].enemyY + ENEMY_HEIGHT/2 - BULLET_HEIGHT/2, 0, 0, 0,1);
+        bullets.push(newBullet);
+    }
     function colourRect(leftX,topY, width,height, drawColor) {
-
         context.fillStyle = drawColor;
         context.fillRect(leftX,topY, width,height);
     }
-
     function displayText(text, x, y, colour) {
         context.font="60px Arial";
         context.font = "30px Impact";
         context.fillStyle = colour;
-        //context.textAlign = "center";
         context.fillText(text, x, y);
-    }
-
-    function ClampEverything(){
-        for (i = 0; i<players.length; i++) {
-            players[i].Clamp();
-        }
-
-        for (i = 0; i<enemies.length; i++) {
-            enemies[i].Clamp();
-        }
     }
 </script>
 

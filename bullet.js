@@ -15,11 +15,12 @@ class bullet {
         else this.colour = '#ff007e';
     }
     Update() {
-        // if shooter is enemy
+        // if shooter is enemy bullet moves left
         if(this.shooter > 0) this.bulletX -= ENEMY_BULLET_SPEED;
+        // if shooter is player bullet moves in the direction player was facing
         else{
-            this.bulletX += this.dx*10;
-            this.bulletY += this.dy*10;
+            this.bulletX += this.dx*PLAYER_BULLET_SPEED;
+            this.bulletY += this.dy*PLAYER_BULLET_SPEED;
         }
         this.Clamp();
     }
@@ -29,10 +30,10 @@ class bullet {
         context.rotate(this.bulletAngle);
         context.fillStyle = this.colour;
         context.fillRect(-BULLET_WIDTH/2,-BULLET_HEIGHT/2, BULLET_WIDTH,BULLET_HEIGHT);
-        // colourRect(this.bulletX,this.bulletY,BULLET_WIDTH,BULLET_HEIGHT,'grey');
         context.restore();
     }
     CheckCollision() {
+        // Check collision on enemy and player
         if (this.shooter < 1){
             let o;
             for (o=0; o<enemies.length; o++){
